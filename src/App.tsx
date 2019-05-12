@@ -18,10 +18,10 @@ interface Idiv {
 const div: StyledFunction<Idiv & HTMLProps<HTMLDivElement>> = styled.div;
 
 class App extends TaskTemplate {
+    private answer: boolean = false;
 
     constructor(props: {}) {
         super(props);
-        // this.calculate = this.calculate.bind(this);
         this.setYes = this.setYes.bind(this);
         this.setNo = this.setNo.bind(this);
     }
@@ -36,23 +36,31 @@ class App extends TaskTemplate {
         graph2.vertices.forEach(v => store.dispatch(actionsCreators.addVertex(v.name)));
         graph2.edges.forEach(e => store.dispatch(actionsCreators.addEdge(e.vertexOne.name, e.vertexTwo.name)));
 
-        let answ : boolean ;
-        if (Isomorphism.checkNC(graph1,graph2) === false) {answ = false}
-        else {answ = Isomorphism.checkIsomorphism(graph1,graph2)}
-        alert(answ);
+        if (Isomorphism.checkNC(graph1,graph2)) {
+            this.answer = Isomorphism.checkIsomorphism(graph1,graph2);
+        }
     }
+
+    // public calculate() {
+    //     this.answer;
+    //
+    //     return { success: this.answer === this.studentAnswer, fee: };
+    // }
 
     public getTaskToolbar() {
         TaskToolbar.prototype.getButtonList = () => {
             ToolButtonList.prototype.help = () => `В данном задании Вы должны определить, являются ли
 данные два графа изоморфными.
-При выборе ответа необходимо указать причину.
-После выбора ответа нажмите кнопку отправки для проверки задания.`;
+При выборе ответа необходимо выбрать из списка причину, по которой Вы дали данный ответ.
+После выбора ответа нажмите кнопку отправки для проверки задания.
+В случае верного указания ответа и причины, Вам будет начислен максимальный балл.
+В противном случае Вам будет дана еще одна попытка для изменения варианта ответа и/или обоснования ответа`;
             return ToolButtonList;
         };
         return TaskToolbar;
     }
     public setYes(){
+        // this.studentAnswer;
         alert("Yes");
     }
 
