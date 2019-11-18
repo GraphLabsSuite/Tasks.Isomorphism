@@ -27,6 +27,7 @@ class App extends TaskTemplate {
     }
 
     public componentWillMount() {
+
         const obj = GraphLoader.parseFromStr();
         const graph1 : Graph<Vertex, Edge>  = GraphLoader.createGraph(obj , 0);
         graph1.vertices.forEach(v => store.dispatch(actionsCreators.addVertex(v.name)));
@@ -35,7 +36,7 @@ class App extends TaskTemplate {
         const graph2 : Graph<Vertex, Edge>= GraphLoader.createGraph(obj , 1);
         graph2.vertices.forEach(v => store.dispatch(actionsCreators.addVertex(v.name)));
         graph2.edges.forEach(e => store.dispatch(actionsCreators.addEdge(e.vertexOne.name, e.vertexTwo.name)));
-
+ 
         if (Isomorphism.checkNC(graph1,graph2)) {
             this.answer = Isomorphism.checkIsomorphism(graph1,graph2);
         }
