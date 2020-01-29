@@ -1,13 +1,12 @@
 import * as React from 'react';
-import {GraphVisualizer, TaskTemplate, TaskToolbar, ToolButtonList} from 'graphlabs.core.template';
-import { Adapter } from "./Adapter";
-import { TaskConsole } from "graphlabs.core.template";
+import {store, GraphVisualizer, Template, Toolbar, ToolButtonList} from 'graphlabs.core.template';
+//import { Adapter } from "./Adapter";
+import { Console } from "graphlabs.core.template";
 import { StudentMark } from "graphlabs.core.template";
-import {default as styled, StyledFunction } from 'styled-components';
+//import {default as styled, StyledFunction } from 'styled-components';
 import {Component, HTMLProps, SFC} from 'react';
-import {GraphLoader} from "./GraphLoader";
-import {actionsCreators} from "graphlabs.core.template";
-import {store} from "graphlabs.core.template";
+//import {GraphLoader} from "./GraphLoader";
+import {graphActionCreators} from "graphlabs.core.template";
 import {Isomorphism} from "./Isomorphism";
 import {IGraph, IVertex, IEdge, Graph, Vertex, Edge} from "graphlabs.core.graphs";
 
@@ -15,9 +14,9 @@ interface Idiv {
     id: string;
 }
 
-const div: StyledFunction<Idiv & HTMLProps<HTMLDivElement>> = styled.div;
+//const div: StyledFunction<Idiv & HTMLProps<HTMLDivElement>> = styled.div;
 
-class App extends TaskTemplate {
+class App extends Template {
     private answer: boolean = false;
 
     constructor(props: {}) {
@@ -28,6 +27,7 @@ class App extends TaskTemplate {
 
     public componentWillMount() {
 
+        /*
         const obj = GraphLoader.parseFromStr();
         const graph1 : Graph<Vertex, Edge>  = GraphLoader.createGraph(obj , 0);
         graph1.vertices.forEach(v => store.dispatch(actionsCreators.addVertex(v.name)));
@@ -40,6 +40,7 @@ class App extends TaskTemplate {
         if (Isomorphism.checkNC(graph1,graph2)) {
             this.answer = Isomorphism.checkIsomorphism(graph1,graph2);
         }
+        */
     }
 
     // public calculate() {
@@ -49,7 +50,7 @@ class App extends TaskTemplate {
     // }
 
     public getTaskToolbar() {
-        TaskToolbar.prototype.getButtonList = () => {
+        Toolbar.prototype.getButtonList = () => {
             ToolButtonList.prototype.help = () => `В данном задании Вы должны определить, являются ли
 данные два графа изоморфными.
 При выборе ответа необходимо выбрать из списка причину, по которой Вы дали данный ответ.
@@ -58,7 +59,7 @@ class App extends TaskTemplate {
 В противном случае Вам будет дана еще одна попытка для изменения варианта ответа и/или обоснования ответа`;
             return ToolButtonList;
         };
-        return TaskToolbar;
+        return Toolbar;
     }
     public setYes(){
         // this.studentAnswer;
@@ -77,11 +78,11 @@ class App extends TaskTemplate {
                 <p><strong>Являются ли графы изоморфными?</strong></p>
                 <p><input type="radio" name="answer" value="yes" onClick={this.setYes}/> Да</p>
                 <p><input type="radio" name="answer" value="no" onClick={this.setNo} /> Нет</p>
-                <p> Почему?</p>
             </form>
         )
     }
 
+    /*
     public render() {
         const Task = this.task();
         const Toolbar = this.getTaskToolbar();
@@ -113,10 +114,11 @@ class App extends TaskTemplate {
             </App2>
         )
     }
+    */
 }
 export default App;
 
-
+/*
 const BorderedDiv = styled.div`
   {
     box-shadow:2px 2px 11px rgba(0, 0, 0, 0.5);
@@ -198,3 +200,4 @@ const MainRow = styled.div`
     height: 80%;
   }
 `;
+*/
