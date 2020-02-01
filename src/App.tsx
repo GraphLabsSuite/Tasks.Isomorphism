@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {store, GraphVisualizer, Template, Toolbar, ToolButtonList} from 'graphlabs.core.template';
+import {store, graphModel, GraphVisualizer, Template, Toolbar, ToolButtonList} from 'graphlabs.core.template';
 //import { Adapter } from "./Adapter";
 import { Console } from "graphlabs.core.template";
 import { StudentMark } from "graphlabs.core.template";
@@ -17,8 +17,9 @@ interface Idiv {
 //const div: StyledFunction<Idiv & HTMLProps<HTMLDivElement>> = styled.div;
 
 class App extends Template {
-    private answer: boolean = false;
-
+  public ngraphs: Graph<Vertex, Edge>[] = [];  
+  private answer: boolean = false;
+    
     constructor(props: {}) {
         super(props);
         this.setYes = this.setYes.bind(this);
@@ -27,20 +28,60 @@ class App extends Template {
 
     public componentWillMount() {
 
-        /*
-        const obj = GraphLoader.parseFromStr();
-        const graph1 : Graph<Vertex, Edge>  = GraphLoader.createGraph(obj , 0);
-        graph1.vertices.forEach(v => store.dispatch(actionsCreators.addVertex(v.name)));
-        graph1.edges.forEach(e => store.dispatch(actionsCreators.addEdge(e.vertexOne.name, e.vertexTwo.name)));
+      const variantData = sessionStorage.getItem('variant');
+      let varianObject: any;
 
-        const graph2 : Graph<Vertex, Edge>= GraphLoader.createGraph(obj , 1);
-        graph2.vertices.forEach(v => store.dispatch(actionsCreators.addVertex(v.name)));
-        graph2.edges.forEach(e => store.dispatch(actionsCreators.addEdge(e.vertexOne.name, e.vertexTwo.name)));
- 
-        if (Isomorphism.checkNC(graph1,graph2)) {
-            this.answer = Isomorphism.checkIsomorphism(graph1,graph2);
-        }
-        */
+      try {
+        const varianObject = JSON.parse(variantData||"null");
+      } catch (err) {
+          console.log("Error while JSON parsing");
+      }
+
+      if (varianObject && varianObject.data[0] && varianObject.data[0].type && varianObject.data[0].type == 'n-graphs') {
+          if (varianObject.data[0].value && varianObject.data[0].count) {
+              const numberOfGraphs = parseInt(varianObject.data[0].count, 10);
+              const letters = ['a','b','c','d','e','f','g'];
+              for (let i = 0; i < numberOfGraphs; i++) {
+                  if (varianObject.data[0].value.graphs[i]){
+                      const graphInCaсhe: Graph<Vertex, Edge> = new Graph();
+                      const vertices = varianObject.data[0].value.graphs[i].vertices;
+                      const edges  = varianObject.data[0].value.graphs[i].edges;
+                      vertices.forEach((v: any) => {
+                          graphInCaсhe.addVertex(new Vertex(letters[i] + v));
+                          graphModel.addVertex(new Vertex(letters[i] + v));
+                      });
+                      edges.forEach((e: any) => {
+                          graphInCaсhe.addEdge(new Edge(graphInCaсhe.getVertex(letters[i] + e.source)[0], graphInCaсhe.getVertex(letters[i] + e.target)[0]));
+                          graphModel.addEdge(new Edge(graphInCaсhe.getVertex(letters[i] + e.source)[0], graphInCaсhe.getVertex(letters[i] + e.target)[0]));
+                      });
+                      this.ngraphs.push(graphInCaсhe);
+                  }
+              }
+          }
+      }
+
+       if (this.ngraphs.length == 0){
+          const letters = ['a','b'];
+          for (let i = 0; i < 2; i++) {
+              const graphInCaсhe: Graph<Vertex, Edge> = new Graph();
+              for (let j = 0; j < 5; j++) {
+                  graphInCaсhe.addVertex(new Vertex(letters[i] + j.toString()));
+                  graphModel.addVertex(new Vertex(letters[i] + j.toString()));
+              }
+              for (let j = 0; j < 4; j++) {
+                  //graphInCaсhe.addEdge(new Edge(graphInCaсhe.getVertex(letters[i] + j.toString())[0], graphInCaсhe.getVertex(letters[i] + (j+1).toString())[0]));
+                  graphModel.addEdge(new Edge(graphInCaсhe.getVertex(letters[i] + j.toString())[0], graphInCaсhe.getVertex(letters[i] + (j+1).toString())[0]));
+              }
+              this.ngraphs.push(graphInCaсhe);
+          }
+      } 
+      
+      if (this.ngraphs.length == 2){
+          if (Isomorphism.checkNC(this.ngraphs[0], this.ngraphs[1])) {
+              this.answer = Isomorphism.checkIsomorphism(this.ngraphs[0], this.ngraphs[1]);
+          }
+      }
+
     }
 
     // public calculate() {
@@ -63,11 +104,11 @@ class App extends Template {
     }
     public setYes(){
         // this.studentAnswer;
-        alert("Yes");
+        //alert("Yes");
     }
 
     public setNo(){
-        alert("No");
+        //alert("No");
     }
 
     public task(){

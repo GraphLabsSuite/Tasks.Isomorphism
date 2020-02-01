@@ -7,19 +7,19 @@ export class Isomorphism {
 
         const dgVertices1 = this.getDGVertices(gr1).sort((a: number,b: number) =>{return a - b ;});
         const dgVertices2 = this.getDGVertices(gr2).sort((a: number,b: number)=>{return a - b ;});
-        alert("OLD NC "+ (JSON.stringify(dgVertices1) === JSON.stringify(dgVertices2)));
+        //alert("OLD NC "+ (JSON.stringify(dgVertices1) === JSON.stringify(dgVertices2)));
         if (JSON.stringify(dgVertices1) !== JSON.stringify(dgVertices2)) { return false; }
         const adjMatrx1 = this.getAdjMatrix(gr1);
         const adjMatrx2 = this.getAdjMatrix(gr2);
 
         const detMatrix1 = getDetMatrix(adjMatrx1);
         const detMatrix2 = getDetMatrix(adjMatrx1);
-        alert("DET " + (detMatrix1 === detMatrix2));
+        //alert("DET " + (detMatrix1 === detMatrix2));
         if (detMatrix1 !== detMatrix2) { return false;}
 
         const wienerIndex1 = getWienerIndex(adjMatrx1);
         const wienerIndex2 = getWienerIndex(adjMatrx2);
-        alert("WIENER "+ (wienerIndex1 === wienerIndex2));
+        //alert("WIENER "+ (wienerIndex1 === wienerIndex2));
         if (wienerIndex1 !== wienerIndex2) {return false;}
         return true;
     }
