@@ -19,62 +19,74 @@ interface Idiv {
 class App extends Template {
   public ngraphs: Graph<Vertex, Edge>[] = [];  
   private answer: boolean = false;
+  //private private_log_5647: string = "";
     
     constructor(props: {}) {
         super(props);
         this.setYes = this.setYes.bind(this);
         this.setNo = this.setNo.bind(this);
+
+        const variantData = sessionStorage.getItem('variant');
+        let varianObject: any;
+
+        try {
+            varianObject = JSON.parse(variantData||"null");
+            //this.private_log_5647+=(varianObject||"null").toString();
+        } catch (err) {
+            console.log("Error while JSON parsing");
+        }
+        
+        // if (varianObject){
+        //   if (varianObject.data[0]){
+        //     this.private_log_5647+= " varianObject.data ";
+        //     if (varianObject.data[0].type ){
+        //       this.private_log_5647+=" varianObject.data.type ";
+        //     }
+        //   }
+        // }
+        
+        if (varianObject && varianObject.data[0] && varianObject.data[0].type && varianObject.data[0].type == 'n-graphs') {
+            //this.private_log_5647+=" varianObject.data.type == n-graphs; ";
+            if (varianObject.data[0].value && varianObject.data[0].value.count) {
+                const numberOfGraphs = parseInt(varianObject.data[0].value.count, 10);
+                //this.private_log_5647+=" numberOfGraphs == " + numberOfGraphs.toString();
+                for (let i = 0; i < numberOfGraphs; i++) {
+                    if (varianObject.data[0].value.graphs[i]){
+                        const graphInCaсhe: Graph<Vertex, Edge> = new Graph();
+                        const vertices = varianObject.data[0].value.graphs[i].vertices;
+                        const edges  = varianObject.data[0].value.graphs[i].edges;
+                        vertices.forEach((v: any) => {
+                            graphInCaсhe.addVertex(new Vertex(v));
+                            graphModel.addVertex(new Vertex(v));
+                        });
+                        edges.forEach((e: any) => {
+                            graphInCaсhe.addEdge(new Edge(graphInCaсhe.getVertex(e.source)[0], graphInCaсhe.getVertex(e.target)[0]));
+                            graphModel.addEdge(new Edge(graphModel.getVertex(e.source)[0], graphModel.getVertex(e.target)[0]));
+                        });
+                        this.ngraphs.push(graphInCaсhe);
+                    }
+                }
+            }
+        }
+
+        if (this.ngraphs.length == 0){
+            const letters = ['a','b'];
+            for (let i = 0; i < 2; i++) {
+                const graphInCaсhe: Graph<Vertex, Edge> = new Graph();
+                for (let j = 0; j < 5; j++) {
+                    graphInCaсhe.addVertex(new Vertex(letters[i] + j.toString()));
+                    graphModel.addVertex(new Vertex(letters[i] + j.toString()));
+                }
+                for (let j = 0; j < 4; j++) {
+                    //graphInCaсhe.addEdge(new Edge(graphInCaсhe.getVertex(letters[i] + j)[0], graphInCaсhe.getVertex(letters[i] + (j+1).toString())[0]));
+                    graphModel.addEdge(new Edge(graphModel.getVertex(letters[i] + j.toString())[0], graphModel.getVertex(letters[i] + (j+1).toString())[0]));
+                }
+                this.ngraphs.push(graphInCaсhe);
+            }
+        }
     }
 
     public componentWillMount() {
-
-      const variantData = sessionStorage.getItem('variant');
-      let varianObject: any;
-
-      try {
-        const varianObject = JSON.parse(variantData||"null");
-      } catch (err) {
-          console.log("Error while JSON parsing");
-      }
-
-      if (varianObject && varianObject.data[0] && varianObject.data[0].type && varianObject.data[0].type == 'n-graphs') {
-          if (varianObject.data[0].value && varianObject.data[0].count) {
-              const numberOfGraphs = parseInt(varianObject.data[0].count, 10);
-              const letters = ['a','b','c','d','e','f','g'];
-              for (let i = 0; i < numberOfGraphs; i++) {
-                  if (varianObject.data[0].value.graphs[i]){
-                      const graphInCaсhe: Graph<Vertex, Edge> = new Graph();
-                      const vertices = varianObject.data[0].value.graphs[i].vertices;
-                      const edges  = varianObject.data[0].value.graphs[i].edges;
-                      vertices.forEach((v: any) => {
-                          graphInCaсhe.addVertex(new Vertex(letters[i] + v));
-                          graphModel.addVertex(new Vertex(letters[i] + v));
-                      });
-                      edges.forEach((e: any) => {
-                          graphInCaсhe.addEdge(new Edge(graphInCaсhe.getVertex(letters[i] + e.source)[0], graphInCaсhe.getVertex(letters[i] + e.target)[0]));
-                          graphModel.addEdge(new Edge(graphInCaсhe.getVertex(letters[i] + e.source)[0], graphInCaсhe.getVertex(letters[i] + e.target)[0]));
-                      });
-                      this.ngraphs.push(graphInCaсhe);
-                  }
-              }
-          }
-      }
-
-       if (this.ngraphs.length == 0){
-          const letters = ['a','b'];
-          for (let i = 0; i < 2; i++) {
-              const graphInCaсhe: Graph<Vertex, Edge> = new Graph();
-              for (let j = 0; j < 5; j++) {
-                  graphInCaсhe.addVertex(new Vertex(letters[i] + j.toString()));
-                  graphModel.addVertex(new Vertex(letters[i] + j.toString()));
-              }
-              for (let j = 0; j < 4; j++) {
-                  //graphInCaсhe.addEdge(new Edge(graphInCaсhe.getVertex(letters[i] + j.toString())[0], graphInCaсhe.getVertex(letters[i] + (j+1).toString())[0]));
-                  graphModel.addEdge(new Edge(graphInCaсhe.getVertex(letters[i] + j.toString())[0], graphInCaсhe.getVertex(letters[i] + (j+1).toString())[0]));
-              }
-              this.ngraphs.push(graphInCaсhe);
-          }
-      } 
       
       if (this.ngraphs.length == 2){
           if (Isomorphism.checkNC(this.ngraphs[0], this.ngraphs[1])) {
