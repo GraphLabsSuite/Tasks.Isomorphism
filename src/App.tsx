@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {store, graphModel, GraphVisualizer, Template, Toolbar, ToolButtonList} from 'graphlabs.core.template';
-//import { Adapter } from "./Adapter";
+import { Adapter } from "./Adapter";
 import { Console } from "graphlabs.core.template";
 import { StudentMark } from "graphlabs.core.template";
 //import {default as styled, StyledFunction } from 'styled-components';
@@ -135,122 +135,11 @@ class App extends Template {
         )
     }
 
-    /*
-    public render() {
-        const Task = this.task();
-        const Toolbar = this.getTaskToolbar();
-        return (
-            <App2 id="wrap">
-                {this.state.status
-                    ? <p>Задание выполнено. Ожидайте ответа от сервера...</p>
-                    : (
-                        <div>
-                            <MainRow>
-                                <GraphCell>
-                                    <Adapter/>
-                                </GraphCell>
-                                <TaskCell>
-                                    <p>Задание</p>
-                                    <Task/>
-                                </TaskCell>
-                                <ToolCell>
-                                    <Toolbar/>
-                                </ToolCell>
-                            </MainRow>
-                            <LeftBottom>
-                                <StudentMark/>
-                            </LeftBottom>
-                            <LowRow>
-                                <TaskConsole/>
-                            </LowRow>
-                        </div>)}
-            </App2>
-        )
-    }
-    */
+  protected getArea(): SFC<{}> {
+    return () => <Adapter
+        graph = {graphModel}
+    />;
+  }
+
 }
 export default App;
-
-/*
-const BorderedDiv = styled.div`
-  {
-    box-shadow:2px 2px 11px rgba(0, 0, 0, 0.5);
-    -webkit-box-shadow:2px 2px 11px rgba(0, 0, 0, 0.5);
-    border-radius: 10px;
-    background: #fffaf0;
-  }
-`;
-
-const GraphCell = BorderedDiv.extend`
-  {
-    position: fixed;
-    left: 15%;
-    top: 1%;
-    width: 62%;
-    height: 78%;
-  }
-`;
-
-
-const ToolCell = BorderedDiv.extend`
-  {
-     position: fixed;
-    left: 1%;
-    top: 1%;
-    width: 12%;
-    height: 78%;
-  }
-`;
-
-const TaskCell = BorderedDiv.extend`
-  {
-    position: fixed;
-    left: 79%;
-    top: 1%;
-    width: 20%;
-    height: 78%;
-  }
-`;
-
-const LeftBottom = BorderedDiv.extend`
-  {
-    position: fixed;
-    left: 1%;
-    top: 80%;
-    width: 12%;
-    height: 19%;
-  }
-`;
-
-const LowRow = BorderedDiv.extend`
-  {
-    position: fixed;
-    left: 15%;
-    top: 80%;
-    width: 84%;
-    height: 19%;
-  }
-`;
-
-
-
-const App2 = div`
-  {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-  }
-`;
-
-const MainRow = styled.div`
-  {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 80%;
-  }
-`;
-*/
