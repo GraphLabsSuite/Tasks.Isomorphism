@@ -6,7 +6,12 @@ import * as React from 'react';
 import { select } from 'd3-selection';
 import * as d3 from 'd3';
 
-//let AllVertexArr : GeometricVertex<Vertex>[];
+export declare class Color {
+    R: number;
+    G: number;
+    B: number;
+    constructor(R: number, G: number, B: number);
+}
 
 export class Adapter extends ReadableAdapter {
 
@@ -45,6 +50,7 @@ export class Adapter extends ReadableAdapter {
         const referrer = this.ref;
         
         const allVertexArr = this.graphVisualizer.geometric.vertices;
+        const allEdgesArr = this.graphVisualizer.geometric.edges;
 
         function startDrag(this: SVGCircleElement) {
             const circle = d3.select(this).classed('dragging', true);
@@ -84,22 +90,27 @@ export class Adapter extends ReadableAdapter {
 
                 //let str = "";
                 
+                let LabelA = "";
                 let allVertexA = [];
                 let allVertexB = [];
-                //let coloredVertexPair = Array<{vALable: string, vBLable: string}>();
+                let coloredVertexPair = Array<{vALable: string, vBLable: string}>();
                 
                 for (const elem of allVertexArr){
                     if (allVertexA.length == 0){
+                        LabelA = elem.label[0];
                         allVertexA.push(elem);
+                        select(`#vertex_${elem.label}`).style('stroke', '#DB3E00');
                         //str += " ;A+" + elem.label;
-                    } else if (elem.label[0] == allVertexA[0].label[0]){
+                    } else if (elem.label[0] == LabelA){
                         allVertexA.push(elem);
+                        select(`#vertex_${elem.label}`).style('stroke', '#DB3E00');
                         //str += " A+" + elem.label;
                     } else {
                         allVertexB.push(elem);
+                        select(`#vertex_${elem.label}`).style('stroke', '#1A237E');
                         //str += " B+" + elem.label;
                     }
-                    select(`#vertex_${elem.label}`).style('stroke', '#000000');
+                    //select(`#vertex_${elem.label}`).style('stroke', '#000000');
                 }
 
                 for (const vA of allVertexA){
@@ -118,15 +129,36 @@ export class Adapter extends ReadableAdapter {
                         var bR= Number(referrer.getElementById('vertex_'+vBLable).getAttribute('r'));
 
                         if (Math.hypot(Math.abs(aX - bX),Math.abs(aY - bY)) < aR + bR){
-                            select(`#vertex_${vALable}`).style('stroke', '#00ff00');
-                            select(`#vertex_${vBLable}`).style('stroke', '#00ff00');
-                            //coloredVertexPair.push({vALable, vBLable}); 
+                            //select(`#vertex_${vALable}`).style('stroke', '#00ff00');
+                            //select(`#vertex_${vBLable}`).style('stroke', '#00ff00');
+                            coloredVertexPair.push({vALable, vBLable}); 
                         }
                     } 
                 }
 
-                //alert("x=" + d3.event.x.toString() +" ; y=" + d3.event.y.toString() + " ; name=" + circle.attr('id') + " ; r=" + radius + " ; lenght=" + allVertexArr.length + " ; str=" + str );
+                coloredVertexPair = coloredVertexPair.filter(vp => coloredVertexPair.filter(fpv => fpv.vALable == vp.vALable).length < 2 
+                                                                && coloredVertexPair.filter(fpv => fpv.vBLable == vp.vBLable).length < 2);
+                coloredVertexPair.forEach(vp => {
+                    select(`#vertex_${vp.vALable}`).style('stroke', 'green');
+                    select(`#vertex_${vp.vBLable}`).style('stroke', 'green');
+                });
                 
+                allEdgesArr.forEach( edge => {
+                    if (coloredVertexPair.find( vp => vp.vALable == edge.edge.vertexOne.name || vp.vBLable == edge.edge.vertexOne.name)
+                     && coloredVertexPair.find( vp => vp.vALable == edge.edge.vertexTwo.name || vp.vBLable == edge.edge.vertexTwo.name)){
+                        select(`#edge_${edge.edge.vertexOne.name}_${edge.edge.vertexTwo.name}`).style('stroke', 'green');     
+                    } else {
+                        if (edge.edge.vertexOne.name[0] == LabelA){
+                            select(`#edge_${edge.edge.vertexOne.name}_${edge.edge.vertexTwo.name}`).style('stroke', '#DB3E00');
+                        } else {
+                            select(`#edge_${edge.edge.vertexOne.name}_${edge.edge.vertexTwo.name}`).style('stroke', '#1A237E');
+                        } 
+                    }
+                });
+
+                //alert("x=" + d3.event.x.toString() +" ; y=" + d3.event.y.toString() + " ; name=" + circle.attr('id') + " ; r=" + radius + " ; lenght=" + allVertexArr.length + " ; str=" + str );
+                //alert("color=" + LabelA + "str " + str);
+
                 circle.classed('dragging', false);
             }
         }
@@ -153,7 +185,36 @@ export class Adapter extends ReadableAdapter {
                     vertexArr[0].rename(this.getAttribute('label') || "null");
                 }
             }
+        }       
+    }
+
+    componentDidMount() {
+        super.componentDidMount();
+
+        let LabelA = "";
+        const allEdgesArr = this.graphVisualizer.geometric.edges;
+
+        for (const elem of this.graphVisualizer.geometric.vertices){
+            if (LabelA == ""){
+                LabelA = elem.label[0];
+                select(`#vertex_${elem.label}`).style('stroke', '#DB3E00');
+            } else if (LabelA == elem.label[0]){
+                select(`#vertex_${elem.label}`).style('stroke', '#DB3E00');
+            } else if (LabelA != elem.label[0]){
+                select(`#vertex_${elem.label}`).style('stroke', '#1A237E');
+            }         
         }
+
+        d3.selectAll('line').each(function(d, i) {
+            let out_v = d3.select(this).attr('out'); // вершина 1
+            let in_v = d3.select(this).attr('in'); // вершина 2
+            //alert("out_v = " + out_v + "in_v" + in_v);
+            if (in_v[0] == LabelA){
+                d3.select(this).style('stroke', '#DB3E00')
+            } else {
+                d3.select(this).style('stroke', '#1A237E')
+            }
+        }); // перекраска дефолтного цвета
         
     }
 
